@@ -1,10 +1,10 @@
 gearman-ec2-build-script
 ========================
 
-Description
+##Description
 Building and installing gearman from scratch on an amazon aws ec2 server can be a complex challenge. The following script can be cut and pasted into the terminal window of a newly built "Amazon Linux AMI" instance. The script will not only install the lastest version of gearman but will also configure it and install additional components (supervisord) to have a fully functional gearman server with php support.   
 
-Main Workflow
+##Main Workflow
 1. Update / Patch base instance  
 2. Install all dependences
 3. Download, build, and install gearman
