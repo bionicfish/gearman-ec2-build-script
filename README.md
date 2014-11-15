@@ -65,4 +65,11 @@ Coming soon...
 * /etc/supervisord/gearman_workers/reverse_worker.php (Example - "reverse_worker" php file)
 * /etc/supervisord/gearman_workers/reverse_client.php (Example - "reverse_client" php file)
 
+#Future Features
+* Enable run @ instance launch
+* Create a minimal version (without comment or examples)
+* Use Git or wget to pull the example files and config files (making the script shorter)
+* Enable / Configure persistnet job queues
+* Harden Server / Configure auto update
+* Convert script to bash script with install options
 
