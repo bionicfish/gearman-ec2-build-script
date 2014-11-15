@@ -72,4 +72,6 @@ Coming soon...
 * Enable / Configure persistnet job queues
 * Harden Server / Configure auto update
 * Convert script to bash script with install options
+* Include Gearman Manager (for monitoring)
+* Include checks for gearman issues and force reboot / re-start of the service if needed
 
