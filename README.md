@@ -49,18 +49,18 @@ Coming soon...
 * /var/log/supervisord/gearman/ (Gearman worker log directory)
 
 ##Files Created
-#Log files
+####Log files
 * /var/log/gearmand.log (Gearman main log file)
 * /etc/sysconfig/gearmand (Gearman config file)
 
-#Init.d files (auto start-up) 
+####Init.d files (auto start-up) 
 * /etc/init.d/gearmand (Gearman init.d file)
 * /etc/init.d/supervisord (Supervisord init.d file)
 
-#Config files
+####Config files
 * /etc/supervisord/supervisord.conf (Supervisord config file)
 
-#Example Files
+####Example Files
 * /etc/supervisord/reverse_worker.ini (Example - Supervisord "reverse_worker" config file)
 * /etc/supervisord/gearman_workers/reverse_worker.php (Example - "reverse_worker" php file)
 * /etc/supervisord/gearman_workers/reverse_client.php (Example - "reverse_client" php file)
