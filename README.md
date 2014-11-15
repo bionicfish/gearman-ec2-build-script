@@ -21,7 +21,7 @@ Coming soon...
 
 ##Main Components Installed
 * Gearman 1.1.9
-* Supervisord x.x
+* Supervisord x.x (latest version via easy_install)
 * PECL/Gearman extension
 
 ##Additional Dependencies/Components Installed
@@ -44,6 +44,9 @@ Coming soon...
 
 ##Directories Created
 * /etc/supervisord (Supervisord configuration files)
+* /etc/supervisord/gearman_workers (Gearman workers home directory)
+* /var/log/supervisord/ (Supervisord log directory)
+* /var/log/supervisord/gearman/ (Gearman worker log directory)
 
 ##Files Created
 * /var/log/gearmand.log (Gearman main log file)
@@ -51,5 +54,6 @@ Coming soon...
 * /etc/init.d/gearmand (Gearman init.d file)
 * /etc/init.d/supervisord (Supervisord init.d file)
 * /etc/supervisord/supervisord.conf (Supervisord config file)
+* /etc/supervisord/reverse_worker.ini (Supervisord "reverse_worker" config file)
 
 
