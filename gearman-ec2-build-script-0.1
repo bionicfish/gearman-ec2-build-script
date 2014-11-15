@@ -1,0 +1,250 @@
+(C) Copyright 2014 Bionicfish (http://bionic.fish/) 
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+Install Instructions
+###################################################################################
+
+1. Select and copy the commands between the "CUT" marks
+2. Paste the commands into the instance terminal window
+3. Wait...
+4. Wait... 
+5. Confirm that reverse_client.php example returns the reverse string correctly 
+6. Enjoy your new gearman server
+
+
+
+
+........... CUT CUT CUT ............
+
+#### Gearman EC2 Build Script....
+
+#### Configure EC2 Server Base 
+####################################################################################
+
+#### Install Patches....
+sudo yum -y update
+
+#### Install dependences
+sudo yum -y groupinstall 'Development Tools'
+sudo yum -y install boost-devel
+sudo yum -y install gperf
+sudo yum -y install libevent-devel
+sudo yum -y install sqlite-devel
+sudo yum -y install libmemcached-devel
+sudo yum -y install mysql-devel
+sudo yum -y install mysql
+sudo yum -y install php-mysql
+
+
+#### GEARMAND  
+####################################################################################
+
+#### Download and install gearmand
+cd /tmp
+mkdir gearmand
+cd gearmand
+wget https://launchpad.net/gearmand/1.2/1.1.9/+download/gearmand-1.1.9.tar.gz
+tar zxf gearmand-1.1.9.tar.gz
+cd gearmand-1.1.9
+./configure 
+make
+sudo make install
+
+#### Configure Gearmand and Start....
+sudo useradd -M -G daemon gearmand
+sudo mkdir -p /var/run/gearmand/
+sudo touch /var/log/gearmand.log
+sudo chown gearmand:gearmand /var/log/gearmand.log
+sudo touch /etc/sysconfig/gearmand
+sudo chmod 777 /etc/sysconfig/gearmand
+sudo echo -e 'OPTIONS="--listen=localhost --job-retries=3 --verbose INFO --log-file=/var/log/gearmand.log"' > /etc/sysconfig/gearmand
+sudo chmod 644 /etc/sysconfig/gearmand
+sudo sed -i 's:/usr/sbin/gearmand:/usr/local/sbin/gearmand:' support/gearmand.init
+sudo cp support/gearmand.init /etc/init.d/gearmand
+sudo chmod a+x /etc/init.d/gearmand
+sudo chkconfig --add gearmand
+sudo chkconfig gearmand on
+sudo service gearmand start
+
+#### Build Php enviroment 
+sudo yum -y install php php-pear php-devel httpd-devel php-pecl-apc php-cli
+sudo pecl config-set php_ini /etc/php.ini
+sudo pear config-set php_ini /etc/php.ini
+sudo pecl install gearman
+
+#### SUPERVISORD   
+####################################################################################
+
+#### Install Supervisord
+sudo yum install python-setuptools
+sudo easy_install supervisor
+
+#### Create Supervisord init.d file
+sudo mkdir /var/run/supervisord
+sudo touch /etc/init.d/supervisord
+sudo chmod 777 /etc/init.d/supervisord
+sudo cat <<'EOF' >/etc/init.d/supervisord
+#!/bin/sh
+#
+# /etc/rc.d/init.d/supervisord
+#
+# Supervisor is a client/server system that
+# allows its users to monitor and control a
+# number of processes on UNIX-like operating
+# systems.
+#
+# chkconfig: - 64 36
+# description: Supervisor Server
+# processname: supervisord
+
+# Source init functions
+. /etc/rc.d/init.d/functions
+
+prog="supervisord"
+
+prefix="/usr/"
+exec_prefix="${prefix}"
+prog_bin="${exec_prefix}/bin/supervisord"
+
+PIDFILE="/var/run/supervisord/$prog.pid"
+
+OPTIONS="-c /etc/supervisord/supervisord.conf"
+
+start() {
+        echo -n $"Starting $prog: "
+        daemon $prog_bin --pidfile $PIDFILE $OPTIONS
+        RETVAL=$?
+        echo
+        return $RETVAL
+}
+
+stop()
+{
+        echo -n $"Shutting down $prog: "
+        [ -f $PIDFILE ] && killproc $prog || success $"$prog shutdown"
+        echo
+}
+
+case "$1" in
+
+  start)
+    start
+  ;;
+
+  stop)
+    stop
+  ;;
+
+  status)
+        status $prog
+  ;;
+
+  restart)
+    stop
+    start
+  ;;
+
+  *)
+    echo "Usage: $0 {start|stop|restart|status}"
+  ;;
+
+esac
+EOF
+sudo chmod 755 /etc/init.d/supervisord
+
+#### Create Supervisord config file
+sudo mkdir /etc/supervisord
+sudo touch /etc/supervisord/supervisord.conf
+sudo chmod 777 /etc/supervisord/supervisord.conf
+sudo echo_supervisord_conf > /etc/supervisord/supervisord.conf
+sudo chmod 644 /etc/supervisord/supervisord.conf
+
+#### Update Settings in the default supervisord config file
+sudo sed -i 's:/tmp/supervisord.log:/var/log/supervisord.log:' /etc/supervisord/supervisord.conf
+sudo sed -i 's:\;\[include]:\[include]:' /etc/supervisord/supervisord.conf
+sudo sed -i 's:\;files = relative/directory/\*.ini:files = /etc/supervisord/\*.ini:' /etc/supervisord/supervisord.conf
+
+#### Set Supervisord to start at boot-up
+sudo chkconfig --add supervisord
+sudo chkconfig supervisord on
+
+#### Create working directories for workers and their log files 
+sudo mkdir /etc/supervisord/gearman_workers    #Create directory for gearman_workers to live in
+sudo mkdir /var/log/supervisord/               #Create Supervisord Log directory
+sudo mkdir /var/log/supervisord/gearman/       #Create Gearman Worker Log directory
+
+#### CREATE A TEST WORKER AND ENABLE FOR AUTO START VIA SUPERVISORD 
+####################################################################################
+
+#### Create Supervisord reverse_worker.ini file
+sudo touch /etc/supervisord/reverse_worker.ini
+sudo chmod 777 /etc/supervisord/reverse_worker.ini
+sudo cat <<'EOF' >/etc/supervisord/reverse_worker.ini
+[program:reverse_worker]
+command=/usr/bin/php reverse_worker.php              
+process_name=%(program_name)s_%(process_num)02d
+numprocs=1                    
+directory=/etc/supervisord/gearman_workers/                
+autostart=true                
+autorestart=unexpected        
+environment=GEARMAN_USER=gearmand
+user=gearmand           
+stdout_logfile=/var/log/supervisord/gearman/reverse_worker.log        
+stopsignal=KILL
+EOF
+sudo chmod 755 /etc/supervisord/reverse_worker.ini
+
+#### Create reverse_worker.php
+sudo touch /etc/supervisord/gearman_workers/reverse_worker.php
+sudo chmod 777 /etc/supervisord/gearman_workers/reverse_worker.php
+sudo cat <<'EOF' >/etc/supervisord/gearman_workers/reverse_worker.php
+<?php
+$worker= new GearmanWorker();
+$worker->addServer();
+$worker->addFunction("reverse", "my_reverse_function");
+while ($worker->work());
+
+function my_reverse_function($job)
+{
+  return strrev($job->workload());
+}
+?>
+EOF
+sudo chmod 755 /etc/supervisord/gearman_workers/reverse_worker.php
+
+#### Start supervisord (or restart it if already running)
+sudo service supervisord restart
+
+#### Create reverse_client.php
+sudo touch /etc/supervisord/gearman_workers/reverse_client.php
+sudo chmod 777 /etc/supervisord/gearman_workers/reverse_client.php
+sudo cat <<'EOF' >/etc/supervisord/gearman_workers/reverse_client.php
+<?php
+$client= new GearmanClient();
+$client->addServer();
+print "\nRunning test...";
+print "\nReversing \"Hello World\" using reverse_worker .....   ";
+print $client->do("reverse", "Hello World!");
+print "\nComplete!\n\n";
+?>
+EOF
+cd /etc/supervisord/gearman_workers/
+php reverse_client.php
+echo "Script End! Have a good day!"         
+         
+
+
+........... CUT CUT CUT ............         
