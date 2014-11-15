@@ -43,8 +43,13 @@ Coming soon...
 * python-setuptools
 
 ##Directories Created
-* TBD
+* /etc/supervisord (Supervisord configuration files)
 
 ##Files Created
-* TBD
+* /var/log/gearmand.log (Gearman main log file)
+* /etc/sysconfig/gearmand (Gearman config file)
+* /etc/init.d/gearmand (Gearman init.d file)
+* /etc/init.d/supervisord (Supervisord init.d file)
+* /etc/supervisord/supervisord.conf (Supervisord config file)
+
 
