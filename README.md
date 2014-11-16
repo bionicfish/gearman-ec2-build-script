@@ -15,8 +15,8 @@ Building and installing gearman from scratch on an amazon aws ec2 server can be 
 6. Enjoy your new gearman server
 
 ###Post Install
-* Add gearman workers files/scripts to the "/etc/supervisord/gearman_workers" directory (see reverse_worker.php example)
-* Create a supervisord ini file for each gearman worker in the "/etc/supervisord/" directory (see reverse_worker.ini exmaple)
+* Add gearman workers files to "/etc/supervisord/gearman_workers" (see reverse_worker.php example)
+* Create a supervisord ini file for each worker in the "/etc/supervisord/" directory (see reverse_worker.ini exmaple)
 * Any ".ini" files added to the "/etc/supervisord" directory will automatically be run by supervisord when it is restarted. (sudo service supervisord restart)
 * Check that the gearman workers are running (ps -efl | grep gearmand) 
 
