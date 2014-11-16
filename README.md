@@ -5,7 +5,20 @@ gearman-ec2-build-script
 Building and installing gearman from scratch on an amazon aws ec2 server can be a complex challenge. The following script can be cut and pasted into the terminal window of a newly built "Amazon Linux AMI" instance. The script will not only install the lastest version of gearman but will also configure it and install additional components (supervisord) to have a fully functional gearman server with php support.   
 
 ##How to use this script?
-Coming soon...
+
+###Install
+1. Open the gearman-ec2-build-script file
+2. Select and copy the commands between the "CUT" marks
+3. Paste the commands into the instance terminal window and press enter
+4. Wait...
+5. Confirm that the reverse_client.php example returns the reverse string correctly
+6. Enjoy your new gearman server
+
+###Post Install
+* Add gearman workers files/scripts to the "/etc/supervisord/gearman_workers" directory (see reverse_worker.php example)
+* Create a supervisord ini file for each gearman worker in the "/etc/supervisord/" directory (see reverse_worker.ini exmaple)
+* Any ".ini" files added to the "/etc/supervisord" directory will automatically be run by supervisord when it is restarted. (sudo service supervisord restart)
+* Check that the gearman workers are running (ps -efl | grep gearmand) 
 
 ##Main Workflow
 1. Update / Patch base instance  
@@ -74,4 +87,5 @@ Coming soon...
 * Convert script to bash script with install options
 * Include Gearman Manager (for monitoring)
 * Include checks for gearman issues and force reboot / re-start of the service if needed
+* Create more detailed wiki instructions
 
