@@ -48,7 +48,7 @@ sudo yum -y install libmemcached-devel
 sudo yum -y install mysql-devel
 sudo yum -y install mysql
 sudo yum -y install php-mysql
-
+sudo yum -y install memcached
 
 #### GEARMAND  
 ####################################################################################
@@ -85,6 +85,9 @@ sudo yum -y install php php-pear php-devel httpd-devel php-pecl-apc php-cli
 sudo pecl config-set php_ini /etc/php.ini
 sudo pear config-set php_ini /etc/php.ini
 sudo pecl install gearman
+
+#### Memcached Support
+sudo pecl install memcache
 
 #### SUPERVISORD   
 ####################################################################################
