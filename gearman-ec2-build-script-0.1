@@ -71,7 +71,7 @@ sudo touch /var/log/gearmand.log
 sudo chown gearmand:gearmand /var/log/gearmand.log
 sudo touch /etc/sysconfig/gearmand
 sudo chmod 777 /etc/sysconfig/gearmand
-sudo echo -e 'OPTIONS="--listen=localhost --job-retries=3 --verbose INFO --log-file=/var/log/gearmand.log"' > /etc/sysconfig/gearmand
+sudo echo -e 'OPTIONS="--listen=localhost --job-retries=3 --verbose ERROR --log-file=/var/log/gearmand.log"' > /etc/sysconfig/gearmand
 sudo chmod 644 /etc/sysconfig/gearmand
 sudo sed -i 's:/usr/sbin/gearmand:/usr/local/sbin/gearmand:' support/gearmand.init
 sudo cp support/gearmand.init /etc/init.d/gearmand
