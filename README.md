@@ -91,4 +91,5 @@ Building and installing gearman from scratch on an amazon aws ec2 server can be 
 * Include Gearman Manager (for monitoring)
 * Include checks for gearman issues and force reboot / re-start of the service if needed
 * Create more detailed wiki instructions
+* Gearman Monitor install
 
