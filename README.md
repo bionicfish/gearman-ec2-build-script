@@ -56,6 +56,7 @@ Building and installing gearman from scratch on an amazon aws ec2 server can be 
 * php-cli
 * python-setuptools
 * PECL/memcache extension
+* Net_Gearman
 
 ##Directories Created
 * /etc/supervisord (Supervisord configuration files)
